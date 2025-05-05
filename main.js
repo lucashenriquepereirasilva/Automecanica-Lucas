@@ -1,10 +1,13 @@
-const { app, BrowserWindow, nativeTheme, Menu, ipcMain, dialog, shell } = require('electron/main')
-const path = require('node:path')
+console.log("processo Principal")
+console.log(`Electron: ${process.versions.electron}`)
 
+
+const { app, BrowserWindow, nativeTheme, Menu, ipcMain, dialog, shell } = require('electron')
+// essa linha esta relacionada ao preload.js
+const path = require('node:path');
 
 // importação dos metodos conectar e desconectar (modulo de conexão)
 const { conectar, desconectar } = require('./database.js')
-
 
 // importacão do Schema Cliente da camada model
 const clienteModel = require('./src/models/Clientes.js');
@@ -20,92 +23,86 @@ const carroModel = require('./src/models/carrosOS.js')
 const fs = require('fs')
 
 
+
+
+
+
+
+
+
+// Janela principal
+let win
 const createWindow = () => {
-    const win = new BrowserWindow({
-        width: 800,
-        height: 600,
-        webPreferences: {
-            preload: path.join(__dirname, 'preload.js')
-        }
-    })
+  nativeTheme.themeSource = 'dark'
+  win = new BrowserWindow({
+    width: 800,
+    height: 600,
+    resizable: false,
+    icon: './src/img/pc.png',
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js')
+    }
+    // resizable: false   /* remover a ação de minimizar tela */
+    // autoHideMenuBar: true, /* remover a ação de menu tela */
+    //minimizable: false,
 
-    win.loadFile('./src/views/index.html')
+  })
+
+  // menu personalizado 
+  Menu.setApplicationMenu(Menu.buildFromTemplate(template))
+
+  win.loadFile('./src/views/index.html')
+
+
+
+
+
+
+  ipcMain.on('funcionarios-window', () => {
+    funcionariosWindow()
+  })
+
+
+
+
 }
-
-app.whenReady().then(() => {
-    createWindow()
-
-    app.on('activate', () => {
-        if (BrowserWindow.getAllWindows().length === 0) {
-            createWindow()
-        }
-    })
-})
-
-app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') {
-        app.quit()
-    }
-})
-
-// reduzir logs
-app.commandLine.appendSwitch('log-level', '3')
-
-// iniciar a conexão com o banco de dados
-ipcMain.on('db-connect', async (event) => {
-    let conectado = await conectar()
-    // se conectado for igual a true
-    /*
-    if (conectado) {
-        setTimeout(() => {
-            event.reply('db-status', "conectado")
-        }, 500)
-    }
-        */
-})
-
-//  Importante ! Desconectar do banco de dados quando a aplicçõ for encerrada
-app.on('before-quit', () => {
-    desconectar()
-})
 
 // janela sobre
 const aboutwindow = () => {
-    const about = new BrowserWindow({
-      width: 360,
-      height: 220,
-      icon: './src/img/pc.png',
-      autoHideMenuBar: true,
-      resizable: false
-    })
-  
-    about.loadFile('./src/views/sobre.html')
-  
-  }
+  const about = new BrowserWindow({
+    width: 360,
+    height: 220,
+    icon: './src/img/pc.png',
+    autoHideMenuBar: true,
+    resizable: false
+  })
 
+  about.loadFile('./src/views/sobre.html')
 
-  // Janela secudaria
+}
+
+// Janela secudaria
 
 const childWindow = () => {
-    const father = BrowserWindow.getFocusedWindow()
-    if (father) {
-      const child = new BrowserWindow({
-        width: 640,
-        height: 220,
-        icon: './src/public/img/pc.png',
-        autoHideMenuBar: true,
-        resizable: false,
-        parent: father,
-        modal: true
-  
-      })
-      child.loadFile('./src/views/child.html')
-  
-    }
-  }
-  
+  const father = BrowserWindow.getFocusedWindow()
+  if (father) {
+    const child = new BrowserWindow({
+      width: 640,
+      height: 220,
+      icon: './src/public/img/pc.png',
+      autoHideMenuBar: true,
+      resizable: false,
+      parent: father,
+      modal: true
 
-  let client
+    })
+    child.loadFile('./src/views/child.html')
+
+  }
+}
+
+
+let client
 function clientWindow() {
   nativeTheme.themeSource = 'light'
   const main = BrowserWindow.getFocusedWindow()
@@ -150,6 +147,9 @@ function osWindow() {
   os.loadFile('./src/views/os.html')
   os.center()
 }
+
+
+
 
 let funcionarios
 function funcionariosWindow() {
@@ -695,120 +695,138 @@ ipcMain.on('new-carro', async (event, car) => {
 
 
 
+//Crud Read ======================================================
 
-// Validação de busca (preenchimento obrigatorio)
+//Validação de busca (preenchimento obrigatoria)
 ipcMain.on('validate-search', () => {
   dialog.showMessageBox({
-    type: 'warning',
-    title: 'Atenção',
-    message: 'Preencha o campo de busca',
-    buttons: ['OK']
+      type: 'warning',
+      title: "ATENÇÂO!",
+      message: "Preencha o campo de buscas",
+      buttons: ["OK"]
   })
 })
 
+ipcMain.on('search-name', async (event, name) => {
+  console.log("teste IPC search-name")
 
-ipcMain.on('search-name', async(event, name) => {
-  //console.log("teste IPC search-name") Dica para testar o funcionamento
-  //console.log(name) // teste do passo 2 (importante)
+  //Passo 3 e 4: Busca dos dados do cliente no banco
 
-  // passos 3 e 4 busca dos dados do cliente do banco
   //find({nomeCliente: name}) - busca pelo nome
-  //RegExp(name, i) - (insensitive / Ignorar maiúsculo ou minúsculo)
-  try{
-    /*const dataClient = await clientModel.find({
-      nomeCliente: new RegExp(name, 'i')
-    })*/
-      const dataClient  = await clientModel.find({
-        $or: [
-          { nomeCliente: new RegExp(name, 'i') },
-          { cpfCliente: new RegExp(name, 'i') }
-        ]
-      })
-    console.log(dataClient) // teste passo 3 e 4 (Importante!)
-
-    // melhoria d eexperiencia do usuario (se o cliente nao estiver cadastrado, alertar o usuario e questionar se ele
-    // quer cadastrar este novo cliente. Se não quiser cadastrar, limpar os campos, se quiser cadastrar recortar o nome do cliente do campo de busca e colar no campo nome)
-
-    // se o vetor estiver vazio []
-    if(dataClient.length === 0) {
-      dialog.showMessageBox({
-        type: 'warning',
-        title: "Aviso",
-        message: "Cliente não cadastrado.\nDeseja cadastra-lo",
-        defaultId: 0, //botão 0
-        buttons: ['Sim', 'Não'] // [0, 1]
-      }).then((result) => {
-        if (result.response === 0) {
-          // enviar ao renderizador um pedido para setar os campos (recortar do campo de busca e colocar no campo nome)
-          event.reply('set-client')
-        } else {
-          // limpar o formulário
-          event.reply('reset-form')
-        }
-      })
-    }
-
-    // Passo 5: 
-    // enviando os dados do cliente ao rendererCliente
-    // OBS: IPC só trabalha com string, então é necessario converter o JSON para string JSON.stringify(dataClient)
-    event.reply('renderClient', JSON.stringify(dataClient))
-
-  }catch (error) {
-    console.log (error)
-  }
-})
-
-
-// ========================== CRUD UPDATE
-
-ipcMain.on('update-client', async (event, client)=> {
-  console.log(client) //  teste importante ( recebimentos de dados dos cliente)
+  //RegExp(name, i) - i (insensitive / Ignorar maiúsculo ou minúsculo)
   try {
- // criar uma nova estrutura de dados usando a classe modelo
-    // modelo. Atenção os atributos precisam ser identicos
-    // ao modelo de dados do clientes.js e os valores são definidos pelo conteúdo do objeto cliente
-    const updateClient = await clienteModel. findByIdAndUpdate(
-      client.idCli,
-      {
-      nomeCliente: client.nameCli,
-      cpfCliente: client.cpfCli,
-      emailCliente: client.emailCli,
-      foneCliente: client.phoneCli,
-      cepCliente: client.cepCli,
-      logradouroCliente: client.logradouroCli,
-      numeroCliente: client.numeroCli,
-      complementoCliente: client.complementCli,
-      bairroCliente: client.bairroCli,
-      cidadeCliente: client.cidadeCli,
-      ufCli: client.ufCli,
-          
+      const dataClient = await clienteModel.find({
+          $or: [
+              { nomeCliente: new RegExp(name, 'i') },
+              { cpfCliente: new RegExp(name, 'i') }
+          ]
+      })
+      console.log(dataClient)//Teste do pásso 3 e 4
 
-    },
-    {
-      new: true
-    }
-)
-// confirmação
+      //Melhoria de experiência do usuário (se o cliente não estiver cadastrado, alertar o usuário e questionar se ele quer capturar este cliente, se não quiser cadastrar, limpar os campos, se quiser cadastrar recortar o nome do cliente ou o cpf do campo de busca e colar no campo nome ou cpf).
+      //Se o vetor estiver vazio [] (cliente não cadastrado)
+      if (dataClient.length === 0) {
+          dialog.showMessageBox({
+              type: 'warning',
+              title: "Aviso",
+              message: "Cliente não cadastro. \n Deseja cadastrar esse cliente?",
+              defaultId: 0,
+              buttons: ['SIM', 'NÃO'] // [0, 1]
+          }).then((result) => {
+              if (result.response === 0) {
+                  //Enviar ao renderizador um pedido para setar os campos (recortar do campo de busca e colar no campo nome)
+                  event.reply('set-client')
+              } else {
+                  //Limpar formulário
+                  event.reply('reset-form')
+              }
+          })
+      }
 
- //Mensagem de confirmação
- dialog.showMessageBox({
-  //Customização
-  type: 'info',
-  title: "Aviso",
-  message: "Dados Atualizados com sucesso ",
-  buttons: ['OK']
-}).then((result) => {
-  //ação ao precionar o botão 
-  if (result.response === 0) {
-    // enviar um pedido para o renderizador limpar os campos e resetar as 
-    // configurações pré definidas (rótulo) preload.js
-    event.reply('reset-form')
-  }
-
-})
-
-
+      //Passo 5: 
+      //Enviando os dados do cliente ao rendererCliente
+      //OBS: ipc só trabalha com string, então é necessario converter o JSON para JSON.stringify(dataClient)
+      event.reply('render-client', JSON.stringify(dataClient))
   } catch (error) {
-    console.log(error)
+      console.log(error)
   }
 })
+
+//Fim Crud Read ======================================================
+
+//CRUD DELETE ================================================
+
+ipcMain.on('delete-client', async (event, id) => {
+  console.log(id)//Teste do passo 2 (recebimento do id)
+
+  try {
+      //IMPORTANTE - confirmar a exclusão
+      //Client é o nome da variável que representa a janela
+      const { response } = await dialog.showMessageBox(client, {
+          type: 'warning',
+          title: "Atenção",
+          message: "Deseja excluir este cliente?\nEsta ação não podera ser desfeita.",
+          buttons: ['Cancelar', 'Excluir'] //[0,1]
+      })
+      if (response === 1) {
+          console.log("teste")
+          //Passo 3: excluir o resgistro do cliente
+          const delClient = await clienteModel.findByIdAndDelete(id)
+          event.reply('reset-form')
+      }
+  } catch (error) {
+      console.log(error)
+  }
+})
+
+//FIM CRUD DELETE ================================================
+
+//Crud UPDATE ====================================================
+
+ipcMain.on('update-client', async (event, client) => {
+  console.log(client)//Teste importante do recebimento dos dados do cliente
+
+  try {
+      //Criar uma nova estrutura de dados usando a classe modelo
+      //Atenção! OS atributos precisam ser identicos ao modelo de dados clientes.js
+      //e os valores são definidos pelo conteúdo ao objeto client
+      const updateClient = await clienteModel.findByIdAndUpdate(
+          client.idCli,
+          {
+              nomeCliente: client.nameCli,
+              cpfCliente: client.cpfCli,
+              emailCliente: client.emailCli,
+              foneCliente: client.foneCli,
+              cepCliente: client.cepCli,
+              logradouroCliente: client.logfCli,
+              numeroCliente: client.numCli,
+              complementoCliente: client.complementoCli,
+              bairroCliente: client.bairroCli,
+              cidadeCliente: client.cidadeCli,
+              ufCliente: client.ufCli
+          },
+          {
+              new: true
+          }
+      )
+
+      //Messagem de confirmação
+      dialog.showMessageBox({
+          //Customização
+          type: 'info',
+          title: "Aviso",
+          message: "Dados do cliente alterados com sucesso",
+          buttons: ['OK']
+      }).then((result) => {
+          //Ação ao pressionar o botão
+          if (result.response === 0) {
+              //Enviar um pedido para o renderizador limpar os campos e resetar as configurações pré definidas (rotulo preload)
+              event.reply('reset-f')
+          }
+      });
+  } catch (error) {
+      console.log(error)
+  }
+})
+
+//FIM Crud UPDATE ====================================================
