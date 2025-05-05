@@ -15,6 +15,8 @@ const clienteModel = require('./src/models/Clientes.js');
 const osModel = require('./src/models/OS.js')
 
 const carroModel = require('./src/models/carrosOS.js')
+
+//const { jspdf, default: jsPDF } = require('jspdf')
 // importação do pacote jspdf
 
 //const { jspdf, default: jsPDF } = require('jspdf')
@@ -608,7 +610,7 @@ ipcMain.on('new-os', async (event, OS) => {
       if (result.response === 0) {
         // enviar um pedido para o renderizador limpar os campos e resetar as 
         // configurações pré definidas (rótulo) preload.js
-        event.reply('reset-form')
+        event.reply('reset-f')
       }
 
     })
@@ -738,7 +740,7 @@ ipcMain.on('search-name', async (event, name) => {
                   event.reply('set-client')
               } else {
                   //Limpar formulário
-                  event.reply('reset-form')
+                  event.reply('reset-f')
               }
           })
       }
@@ -772,7 +774,7 @@ ipcMain.on('delete-client', async (event, id) => {
           console.log("teste")
           //Passo 3: excluir o resgistro do cliente
           const delClient = await clienteModel.findByIdAndDelete(id)
-          event.reply('reset-form')
+          event.reply('reset-f')
       }
   } catch (error) {
       console.log(error)

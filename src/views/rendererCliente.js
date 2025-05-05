@@ -1,3 +1,21 @@
+function buscarCEP() {
+
+  let cep = document.getElementById('inputCEPClient').value
+  let urlAPI = `https://viacep.com.br/ws/${cep}/json/`
+  fetch(urlAPI)
+    .then(response => response.json())
+    .then(dados => {
+      document.getElementById('inputAddressClient').value = dados.logradouro
+      document.getElementById('inputBairroClient').value = dados.bairro
+      document.getElementById('inputCidadeClient').value = dados.localidade
+      document.getElementById('inputUFClient').value = dados.uf
+
+    })
+    .catch(error => console.log(error)
+    )
+}
+
+
 document.addEventListener('DOMContentLoaded', () => {
   // Captura dos elementos do DOM
  let foco = document.getElementById('searchClient');
@@ -25,21 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Foco na busca do cliente
   foco.focus();
   
-  // Função de buscar CEP
-  function buscarCEP() {
-    let cep = cepClient.value;
-    let urlAPI = `https://viacep.com.br/ws/${cep}/json/`;
-    
-    fetch(urlAPI)
-      .then(response => response.json())
-      .then(dados => {
-        document.getElementById('inputAddressClient').value = dados.logradouro;
-        document.getElementById('inputBairroClient').value = dados.bairro;
-        document.getElementById('inputCidadeClient').value = dados.localidade;
-        document.getElementById('inputUFclient').value = dados.uf;
-      })
-      .catch(error => console.log(error));
-  }
+
 
   // Função para a tecla Enter
   function teclaEnter(event) {
@@ -196,11 +200,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 emailClient.value = c.emailCliente,
                 telefoneClient.value = c.foneCliente,    
                 cepClient.value = c.cepCliente,
-                AddressClient.value = c.logradouroCliente,
+                logradouroClient.value = c.logradouroCliente,
                 numeroClient.value = c.numeroCliente,
                 complementClient.value = c.complementoCliente,
                 bairroClient.value = c.bairroCliente,
-                CityClient.value = c.cidadeCliente,
+                cidadeClient.value = c.cidadeCliente,
                 ufClient.value = c.ufCliente
                 btnCreate.disabled= true
                 btnDelete.disabled = false

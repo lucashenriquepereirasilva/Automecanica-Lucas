@@ -4,6 +4,7 @@
 
 console.log("processo de renderização")
 
+
 function client() {
     api.clientWindow()
 }
