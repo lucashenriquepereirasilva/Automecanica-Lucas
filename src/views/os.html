@@ -39,12 +39,26 @@
                     </span>
                 </div>
             </div>
+            <div>
+                  <!--lista de sugestões - estilo google-->
+            <ul id="viewListSuggestion" class="list-grop
+            position-absolute w-100"
+            ></ul>
+            </div>
+          
 
             <!-- Nome -->
             <div class="col-md-5">
                 <label for="inputNameClient" class="form-label">Nome</label>
                 <input type="text" class="form-control" id="inputNameClient" spellcheck="false" maxlength="30" disabled>
             </div>
+
+              <!-- Id -->
+              <div class="col-md-4">
+                <label for="inputIdClient" class="form-label">Id do cliente</label>
+                <input type="text" class="form-control" id="inputIdClient" spellcheck="false" maxlength="15" disabled>
+            </div>
+
 
             <!-- Telefone -->
             <div class="col-md-3">
@@ -135,13 +149,15 @@
             <!-- Linha -->
             <hr class="mt-4 border border-secondary border -1">
 
-            <div class="mt-3">
-                <button type="submit" class="btn btn-success" id="btnCreate">Adicionar</button>
-                <button type="submit" class="btn btn-warning" id="btnUpdate">Editar</button>
-                <button type="button" class="btn btn-danger" id="btnDelete">Excluir</button>
+            <div class="mt-2 d-flex justify-content-center gap-1">
+                <button type="button" class="btn btn-success">Gerar OS</button>
+                <button type="button" class="btn btn-primary" onclick="inputOS()" >Buscar OS</button>
+                <button type="button" class="btn btn-warning">Editar OS</button>
+                <button type="button" class="btn btn-danger">Excluir OS</button>
+                <button type="button" class="btn btn-secondary">Imprimir OS</button>
                 <button type="reset" class="btn" id="btnReset" onclick="resetForm()"></button>
-             </div>
         </form>
+    </div>
     </div>
 
     <!-- Bootstrap -->

@@ -75,3 +75,8 @@ body {
   
 }
 
+/* lista de clientes vinculados a OS */
+#viewListSuggestion {
+     z-index: 0;
+     max-width: 382px;
+}

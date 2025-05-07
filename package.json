@@ -21,6 +21,7 @@
     "electron": "^36.0.0"
   },
   "dependencies": {
+    "electron-prompt": "^1.7.0",
     "mongoose": "^8.14.1"
   }
 }

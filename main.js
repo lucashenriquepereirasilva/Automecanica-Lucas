@@ -24,6 +24,10 @@ const carroModel = require('./src/models/carrosOS.js')
 // importação da biblioteca fs(nativa do javascript) para a manipulação de arquivos
 const fs = require('fs')
 
+// importação do recurso "electron-prompt (dialog de input)
+const prompt = require("electron-prompt");
+const { error } = require('node:console');
+
 
 
 
@@ -831,4 +835,55 @@ ipcMain.on('update-client', async (event, client) => {
   }
 })
 
+
 //FIM Crud UPDATE ====================================================
+
+
+
+ipcMain.on('search-os', (event) => {
+  //console.log("teste: busca OS")
+  prompt({
+      title: 'Buscar OS',
+      label: 'Digite o número da OS:',
+      inputAttrs: {
+          type: 'text'
+      },
+      type: 'input',        
+      width: 400,
+      height: 200
+  }).then((result) => {
+      if (result !== null) {
+          console.log(result)
+          //buscar a os no banco pesquisando pelo valor do result (número da OS)
+
+      } 
+  })
+})
+
+// == Fim - Buscar OS =========================================
+// ==========================================================
+
+// == Buscar cliente para vincularna OS (busca estilo google)
+
+
+
+
+// ==  Fim buscar cliente ( estilo google)
+
+ipcMain.on('search-clients', async (event)=> {
+  try {
+    const clients = await clienteModel.find().sort({nomeCliente: 1})
+
+    // console.log(clients) //  teste do passo 2
+    //passo 3 : Enviar dos clientes para o rendereizador
+    // obs :  não esquyecer de converter para string
+
+    
+
+    event.reply('list-clients',JSON.stringify(clients))
+
+    console.log(clients) // teste do passo 2
+  } catch (error) {
+    console.log(error)
+  }
+})
