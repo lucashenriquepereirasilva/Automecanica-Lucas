@@ -11,10 +11,7 @@ function buscarCEP() {
       document.getElementById('inputUFClient').value = dados.uf
 
     })
-    .catch(error => console.log(error)
-    )
-}
-
+    .catch(error => console.log(error)                                                                                                                                                                     
 
 document.addEventListener('DOMContentLoaded', () => {
   // Captura dos elementos do DOM
@@ -31,6 +28,9 @@ document.addEventListener('DOMContentLoaded', () => {
  let bairroClient = document.getElementById('inputBairroClient');
  let cidadeClient = document.getElementById('inputCidadeClient');
  let ufClient = document.getElementById('inputUFclient');
+
+
+
 
   const id = document.getElementById('idClient')
   
@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
       
       // Enviar os dados ao backend
-      api.UpdateClient(client);
+      api.UpdateClient(clients);
 
    
   });
@@ -269,3 +269,5 @@ function resetF() {
   });
 });
 
+
+}

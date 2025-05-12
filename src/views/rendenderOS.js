@@ -118,12 +118,70 @@ let arrayClients = []
     })
    
 
+// ==============================================================================================
 
+
+// criar um vetor para manipulação dos dados da OS
+let arrayOS = []
+
+// captura dos IDs do form OS
+let FrmOS = document.getElementById('frmOS')
+let SearchOS = document.getElementById('inputSearchClient')
+let NameOS = document.getElementById('inputNameClient')
+let idOS = document.getElementById('inputIdClient')
+let PhoneOS = document.getElementById('inputPhoneClient')
+let CpfOS = document.getElementById('inputCPFClient')
+let ConclusãoOS = document.getElementById('inputconclusãoClient')
+let OrcamentosOS = document.getElementById('inputOrcamentoClient')
+let ResponsavelOS = document.getElementById('inputResponsavel')
+let pagOS = document.getElementById('inputpagamentoClient')
+// captura da OS (CRUD Delete e Update)
+let os = document.getElementById('inputOS')
+
+
+//Evento associado ao botão submit (uso das validações do html)
+frmOS.addEventListener('submit', async (event) => {
+    //evitar o comportamento padrão do submit que é enviar os dados do formulário e reiniciar o documento html
+    event.preventDefault()
+    // validação do campo obrigatório 'idClient' (validação html não funciona via html para campos desativados)
+    if (idClient.value === "") {
+        api.validateClient()
+    } else {
+        // Teste importante (recebimento dos dados do formuláro - passo 1 do fluxo)
+        console.log(os.value, idClient.value, SearchOS.value, NameOS.value, idOS.value, PhoneOS.value, CpfOS.value, ConclusãoOS.value, orcamentoOS.value, ResponsavelOS.value, pagOS.value )
+        if (os.value === "") {
+            //Gerar OS
+            //Criar um objeto para armazenar os dados da OS antes de enviar ao main
+            const os = {
+                idClient_OS: idClient.value,
+                stat_OS: SearchOS.value,
+                computer_OS: NameOS.value,
+                serial_OS: idOS.value,
+                problem_OS: PhoneOS.value,
+                specialist_OS: CpfOS.value,
+                diagnosis_OS: ConclusãoOS.value,
+                parts_OS: orcamentoOS.value,
+                total_OS: ResponsavelOS.value,
+                pagOS: pagOS.value
+            }
+            // Enviar ao main o objeto os - (Passo 2: fluxo)
+            // uso do preload.js
+            api.newOS(os)
+        } else {
+            //Editar OS
+
+        }
+    }
+})
 
 
 
   // == fIM - BUSCAR - Busca avancada ==========================
 
+
+
+
+  
   //====================== buscar os =========================
 
   function inputOS() {
