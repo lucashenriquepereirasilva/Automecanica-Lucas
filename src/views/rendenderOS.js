@@ -175,6 +175,44 @@ frmOS.addEventListener('submit', async (event) => {
 })
 
 
+// == Buscar OS - CRUD Read ===================================
+
+function findOS() {
+    api.searchOS()
+}
+
+api.renderOS((event, dataOS) => {
+    console.log(dataOS)
+    const os = JSON.parse(dataOS)
+    // preencher os campos com os dados da OS
+    idOS.value = os._id
+    // formatar data:
+    const data = new Date(os.dataEntrada)
+    const formatada = data.toLocaleString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+    })
+    dataOS.value = formatada
+    idClient.value = os.idCliente
+    statusOS.value = os.status
+    computer.value = os.computador
+    serial.value = os.serie
+    problem.value = os.problema
+    specialist.value = os.tecnico
+    diagnosis.value = os.diagnostico
+    parts.value = os.pecas
+    total.value = os.valor
+})
+
+// == Fim - Buscar OS - CRUD Read =============================
+// ============================================================
+
+
+
 
   // == fIM - BUSCAR - Busca avancada ==========================
 
@@ -185,14 +223,14 @@ frmOS.addEventListener('submit', async (event) => {
   //====================== buscar os =========================
 
   function inputOS() {
-    console.log("teste do botão")
+    //console.log("teste do botão")
     api.searchOS()
       }
 
   
   
   api.resetF((args) => {
-    console.log("teste de recebimento")
+    //console.log("teste de recebimento")
    resetF()
   })
   
